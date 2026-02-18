@@ -56,6 +56,16 @@ async function callOpenAI(payload) {
   return response.json();
 }
 
+/**
+ * Replay a CSS animation by briefly removing and re-adding the class.
+ * This forces the browser to restart the animation from its first keyframe.
+ */
+function replayAnimation(el, className) {
+  el.classList.remove(className);
+  void el.offsetWidth;
+  el.classList.add(className);
+}
+
 function setLoading(isLoading) {
   const btnText = submitBtn.querySelector('.btn-text');
   const btnSpinner = submitBtn.querySelector('.btn-spinner');
@@ -66,6 +76,7 @@ function setLoading(isLoading) {
 
   if (isLoading) {
     resultCard.classList.remove('hidden');
+    replayAnimation(resultCard, 'animate-in');
     resultContent.innerHTML =
       '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
     resultMeta.textContent = '';
@@ -75,6 +86,7 @@ function setLoading(isLoading) {
 function showResult(data) {
   const reply = data.choices?.[0]?.message?.content || 'No response received.';
   resultContent.innerHTML = renderMarkdown(reply);
+  replayAnimation(resultCard, 'animate-in');
 
   const usage = data.usage;
   if (usage) {
@@ -85,6 +97,7 @@ function showResult(data) {
 function showError(message) {
   errorMessage.textContent = message;
   errorAlert.classList.remove('hidden');
+  replayAnimation(errorAlert, 'animate-slide-in');
   setTimeout(() => errorAlert.classList.add('hidden'), 8000);
 }
 

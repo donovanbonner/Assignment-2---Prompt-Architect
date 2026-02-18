@@ -1,53 +1,79 @@
-/* Prompt Architect — shadcn-inspired styles */
+/* ==========================================================================
+   Prompt Architect — UI Styles
+   Aesthetic upgrade: indigo/violet accent palette, shimmer button, entrance
+   animations, glow focus states, and elevated card depth. All vanilla CSS.
+   ========================================================================== */
 
+/* --------------------------------------------------------------------------
+   1. Design Tokens / CSS Custom Properties
+   Light-mode defaults with a vibrant indigo-violet accent ramp.
+   -------------------------------------------------------------------------- */
 :root {
-  --background: 0 0% 100%;
+  /* Neutral palette */
+  --background: 240 10% 98%;
   --foreground: 240 10% 3.9%;
   --card: 0 0% 100%;
   --card-foreground: 240 10% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
   --secondary: 240 4.8% 95.9%;
   --secondary-foreground: 240 5.9% 10%;
   --muted: 240 4.8% 95.9%;
   --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --radius: 0.5rem;
+  --radius: 0.625rem;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Accent palette — indigo / violet */
+  --primary: 243 75% 59%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 243 75% 59%;
+  --accent: 252 85% 60%;
+  --accent-foreground: 0 0% 100%;
+  --accent-glow: 243 75% 59%;
+  --gradient-from: 243 75% 59%;
+  --gradient-to: 270 70% 60%;
+  --shimmer: 0 0% 100%;
 }
 
+/* --------------------------------------------------------------------------
+   Dark-mode overrides — brighter violet-blue accent for contrast on dark bg.
+   -------------------------------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 4.5%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
+    --card: 240 10% 7%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
+    --popover: 240 10% 7%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 240 3.7% 18%;
+    --input: 240 3.7% 18%;
+
+    --primary: 250 85% 68%;
+    --primary-foreground: 240 10% 4.5%;
+    --ring: 250 85% 68%;
+    --accent: 260 80% 72%;
+    --accent-foreground: 240 10% 4.5%;
+    --accent-glow: 250 85% 68%;
+    --gradient-from: 250 85% 68%;
+    --gradient-to: 280 75% 72%;
+    --shimmer: 0 0% 100%;
   }
 }
 
+/* --------------------------------------------------------------------------
+   2. Reset
+   -------------------------------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -56,9 +82,15 @@
   box-sizing: border-box;
 }
 
+/* --------------------------------------------------------------------------
+   3. Body & Background
+   Subtle radial gradient adds depth without distraction.
+   -------------------------------------------------------------------------- */
 body {
   font-family: var(--font-sans);
   background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, hsl(var(--gradient-from) / 0.06) 0%, transparent 70%);
   color: hsl(var(--foreground));
   line-height: 1.6;
   min-height: 100vh;
@@ -83,9 +115,32 @@ body {
   gap: 1.5rem;
 }
 
+/* --------------------------------------------------------------------------
+   4. Header
+   Gradient bottom border and accent-colored icon.
+   -------------------------------------------------------------------------- */
 .header {
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: none;
   padding: 1.25rem 1rem;
+  position: relative;
+  background:
+    linear-gradient(to right, hsl(var(--gradient-from) / 0.04), hsl(var(--gradient-to) / 0.04));
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    hsl(var(--gradient-from) / 0.5),
+    hsl(var(--gradient-to) / 0.5),
+    transparent
+  );
 }
 
 .header-content {
@@ -97,8 +152,14 @@ body {
 }
 
 .header-icon {
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary));
   flex-shrink: 0;
+  filter: drop-shadow(0 0 6px hsl(var(--accent-glow) / 0.3));
+  transition: filter 0.3s ease;
+}
+
+.header-icon:hover {
+  filter: drop-shadow(0 0 10px hsl(var(--accent-glow) / 0.5));
 }
 
 .header-title {
@@ -106,6 +167,10 @@ body {
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.2;
+  background: linear-gradient(135deg, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .header-description {
@@ -114,11 +179,26 @@ body {
   margin-top: 0.125rem;
 }
 
+/* --------------------------------------------------------------------------
+   5. Cards
+   Elevated depth, hover lift, and gradient top accent bar on result card.
+   -------------------------------------------------------------------------- */
 .card {
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow:
+    0 1px 3px hsl(var(--foreground) / 0.04),
+    0 4px 12px hsl(var(--foreground) / 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px hsl(var(--foreground) / 0.06),
+    0 8px 24px hsl(var(--accent-glow) / 0.06);
 }
 
 .card-header {
@@ -150,6 +230,10 @@ body {
   justify-content: flex-end;
 }
 
+/* --------------------------------------------------------------------------
+   6. Form Controls — Select, Textarea, Labels
+   Accent-colored focus glow rings.
+   -------------------------------------------------------------------------- */
 .field {
   display: flex;
   flex-direction: column;
@@ -177,13 +261,13 @@ body {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .select:focus {
   outline: none;
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+  border-color: hsl(var(--accent-glow));
+  box-shadow: 0 0 0 3px hsl(var(--accent-glow) / 0.15);
 }
 
 .textarea {
@@ -198,7 +282,7 @@ body {
   font-family: var(--font-sans);
   line-height: 1.6;
   resize: vertical;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .textarea::placeholder {
@@ -207,10 +291,14 @@ body {
 
 .textarea:focus {
   outline: none;
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+  border-color: hsl(var(--accent-glow));
+  box-shadow: 0 0 0 3px hsl(var(--accent-glow) / 0.15);
 }
 
+/* --------------------------------------------------------------------------
+   7. Temperature Slider
+   Accent-gradient track, glowing thumb with hover bounce.
+   -------------------------------------------------------------------------- */
 .slider-header {
   display: flex;
   justify-content: space-between;
@@ -221,8 +309,8 @@ body {
   font-size: 0.875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
+  background: linear-gradient(135deg, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+  color: hsl(var(--primary-foreground));
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius);
 }
@@ -233,9 +321,14 @@ body {
   width: 100%;
   height: 6px;
   border-radius: 9999px;
-  background: hsl(var(--secondary));
+  background: linear-gradient(
+    to right,
+    hsl(var(--gradient-from)),
+    hsl(var(--gradient-to))
+  );
   outline: none;
   cursor: pointer;
+  position: relative;
 }
 
 .slider::-webkit-slider-thumb {
@@ -245,14 +338,19 @@ body {
   height: 20px;
   border-radius: 50%;
   background: hsl(var(--primary));
-  border: 2px solid hsl(var(--background));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 2.5px solid hsl(var(--card));
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 8px hsl(var(--accent-glow) / 0.3);
   cursor: pointer;
-  transition: transform 0.15s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px hsl(var(--accent-glow) / 0.45);
 }
 
 .slider::-moz-range-thumb {
@@ -260,9 +358,19 @@ body {
   height: 20px;
   border-radius: 50%;
   background: hsl(var(--primary));
-  border: 2px solid hsl(var(--background));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 2.5px solid hsl(var(--card));
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 8px hsl(var(--accent-glow) / 0.3);
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 14px hsl(var(--accent-glow) / 0.45);
 }
 
 .slider-labels {
@@ -275,6 +383,10 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
+/* --------------------------------------------------------------------------
+   8. Primary Button — Shimmer Sweep + Glow
+   A diagonal light sweep animates across the button continuously.
+   -------------------------------------------------------------------------- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -288,30 +400,94 @@ body {
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s, opacity 0.15s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
 }
 
 .btn-primary {
-  background-color: hsl(var(--primary));
+  background: linear-gradient(135deg, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
   color: hsl(var(--primary-foreground));
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px hsl(var(--accent-glow) / 0.25);
+}
+
+/* Shimmer sweep pseudo-element */
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    hsl(var(--shimmer) / 0) 30%,
+    hsl(var(--shimmer) / 0.25) 50%,
+    hsl(var(--shimmer) / 0) 70%,
+    transparent 100%
+  );
+  animation: btn-shimmer 2.5s ease-in-out infinite;
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 18px hsl(var(--accent-glow) / 0.35);
+  opacity: 1;
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:disabled::before {
+  animation: none;
+}
+
+@keyframes btn-shimmer {
+  0%   { left: -100%; }
+  100% { left: 100%; }
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
 }
 
 .btn-spinner {
+  position: relative;
+  z-index: 1;
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   9. Result Card — Accent Top Bar + Meta Badge
+   -------------------------------------------------------------------------- */
+.result-card {
+  position: relative;
+}
+
+.result-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .result-card .card-header {
@@ -328,6 +504,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* --------------------------------------------------------------------------
+   10. Result Content Typography
+   -------------------------------------------------------------------------- */
 .result-content {
   font-size: 0.875rem;
   line-height: 1.7;
@@ -391,11 +570,14 @@ body {
   margin-bottom: 0.25rem;
 }
 
+/* --------------------------------------------------------------------------
+   11. Skeleton Loading — Accent-tinted Shimmer
+   -------------------------------------------------------------------------- */
 .skeleton {
   background: linear-gradient(
     90deg,
     hsl(var(--muted)) 25%,
-    hsl(var(--muted) / 0.5) 50%,
+    hsl(var(--accent-glow) / 0.08) 50%,
     hsl(var(--muted)) 75%
   );
   background-size: 200% 100%;
@@ -409,10 +591,13 @@ body {
 .skeleton:nth-child(3) { width: 70%; }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
+  0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
+/* --------------------------------------------------------------------------
+   12. Error Alert
+   -------------------------------------------------------------------------- */
 .alert {
   display: flex;
   align-items: center;
@@ -433,10 +618,30 @@ body {
   flex-shrink: 0;
 }
 
+/* --------------------------------------------------------------------------
+   13. Footer — Gradient Top Border
+   -------------------------------------------------------------------------- */
 .footer {
-  border-top: 1px solid hsl(var(--border));
+  border-top: none;
   padding: 1.25rem 1rem;
   text-align: center;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    hsl(var(--gradient-from) / 0.4),
+    hsl(var(--gradient-to) / 0.4),
+    transparent
+  );
 }
 
 .footer p {
@@ -444,10 +649,65 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
+/* --------------------------------------------------------------------------
+   14. Entrance Animations
+   Applied via CSS classes toggled by JS or used directly for page-load.
+   -------------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered page-load entrance for header and first card */
+.header {
+  animation: fadeIn 0.5s ease both;
+}
+
+.card:first-child {
+  animation: fadeInUp 0.5s ease 0.1s both;
+}
+
+/* Class applied dynamically when result card or error alert appears */
+.animate-in {
+  animation: fadeInUp 0.35s ease both;
+}
+
+.animate-slide-in {
+  animation: slideInDown 0.3s ease both;
+}
+
+/* --------------------------------------------------------------------------
+   15. Utility: Hidden
+   -------------------------------------------------------------------------- */
 .hidden {
   display: none !important;
 }
 
+/* --------------------------------------------------------------------------
+   16. Responsive — Mobile Adjustments
+   -------------------------------------------------------------------------- */
 @media (max-width: 640px) {
   .main {
     padding: 1rem 0.75rem;
